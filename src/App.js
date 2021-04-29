@@ -1,23 +1,33 @@
 import { useState, useEffect } from 'react';
 
 export default function App() {
-  const [location, setLocation] = useState({});
+  const [repos, setRepos] = useState([]);
 
   useEffect(() => {
-    const watch = navigator.geolocation.watchPosition(handlePosition);
-
-    return () => navigator.geolocation.clearWatch(watch);
+    async function fetchRepos() {
+      const response = await fetch('https://api.github.com/users/jlucasrods/repos');
+      setRepos(await response.json());
+    }
+    fetchRepos();
   }, []);
 
-  function handlePosition({ coords: {latitude, longitude} }) {
-    setLocation({ latitude, longitude });
+  const handleFavorite = (repoId) => {
+    setRepos(repos.map(repo => {
+      return repo.id === repoId 
+        ? { ...repo,  favorite: !repo.favorite} 
+        : repo
+    }));
   }
 
   return (
-    <>
-      <h1>Location:</h1>
-      <h2>Latitude {location.latitude}</h2>
-      <h2>longitude {location.longitude}</h2>
-    </>
+    <ul>
+      {repos.map(repo => (
+        <li key={repo.id}>
+          {repo.name}
+          {repo.favorite && <span>[FAVORITO]</span>}
+        <button onClick={() => handleFavorite(repo.id)}> S2 </button>
+        </li>
+      ))}
+    </ul>
   );
 }
