@@ -11,10 +11,22 @@ export default function App() {
     fetchRepos();
   }, []);
 
+  const handleFavorite = (repoId) => {
+    setRepos(repos.map(repo => {
+      return repo.id === repoId 
+        ? { ...repo,  favorite: !repo.favorite} 
+        : repo
+    }));
+  }
+
   return (
     <ul>
       {repos.map(repo => (
-        <li key={repo.id}>{repo.name}</li>
+        <li key={repo.id}>
+          {repo.name}
+          {repo.favorite && <span>[FAVORITO]</span>}
+        <button onClick={() => handleFavorite(repo.id)}> S2 </button>
+        </li>
       ))}
     </ul>
   );
